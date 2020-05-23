@@ -3,9 +3,7 @@ from django.contrib.auth.models import User as UserDjango
 
 
 #Clase User que tiene una relacion uno a uno con un usuario de Django
-class User(models.Model):
-    name = models.CharField(max_length=200)
-    userDjango = models.OneToOneField(UserDjango, on_delete=models.CASCADE)
+class User(UserDjango):
     
     def __str__(self):
-        return self.name
+        return self.first_name +" " +self.last_name
