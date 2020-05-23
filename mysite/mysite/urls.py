@@ -23,11 +23,32 @@ from rest_framework_jwt.views import (
     obtain_jwt_token,
     refresh_jwt_token
 )
+#Se cargan todos los ViewSets
 from users.views import UserViewSet
+from comments.views import CommentViewSet
+from followers.views import FollowerViewSet
+from likes.views import LikeViewSet
+from lists.views import ListViewSet
+from listUsers.views import ListUserViewSet
+from messages.views import MessageViewSet
+from retweets.views import RetweetViewSet
+from savedTweets.views import SavedTweetViewSet
+from tweets.views import TweetViewSet
 
+#Se crea el router que tendra todos los ViewSets
 router = routers.DefaultRouter()
 
+#Se agregan todos los ViewSets al router
 router.register(r'users', UserViewSet)
+router.register(r'comments', CommentViewSet)
+router.register(r'followers', FollowerViewSet)
+router.register(r'likes', LikeViewSet)
+router.register(r'lists', ListViewSet)
+router.register(r'listUsers', ListUserViewSet)
+router.register(r'messages', MessageViewSet)
+router.register(r'retweets', RetweetViewSet)
+router.register(r'savedTweets', SavedTweetViewSet)
+router.register(r'tweets', TweetViewSet)
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),

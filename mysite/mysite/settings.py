@@ -42,7 +42,16 @@ INSTALLED_APPS = [
     'guardian',
     'corsheaders',
     'users.apps.UsersConfig',
-    'permissions.apps.PermissionsConfig'
+    'permissions.apps.PermissionsConfig',
+    'comments.apps.CommentsConfig',
+    'followers.apps.FollowersConfig',
+    'likes.apps.LikesConfig',
+    'lists.apps.ListsConfig',
+    'listUsers.apps.ListUsersConfig',
+    'messages.apps.MessagesConfig',
+    'retweets.apps.RetweetsConfig',
+    'savedTweets.apps.SavedTweetsConfig',
+    'tweets.apps.TweetsConfig'
 ]
 
 MIDDLEWARE = [

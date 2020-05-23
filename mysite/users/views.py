@@ -40,8 +40,8 @@ class UserViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         user = serializer.save()
         print(user.password)
-        user.set_password(user.password);
-        user.save();
+        user.set_password(user.password)
+        user.save()
         assign_perm('users.delete_user', user, user)
         assign_perm('users.change_user', user, user)
         
@@ -51,11 +51,11 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(detail=True, url_path='password', methods=['post'])
     def set_password(self, request, pk=None):
         user = self.get_object()
-        queryData=request.data;
+        queryData=request.data
         data = dict(queryData)
-        password = (data['password'][0]);
-        user.set_password(password);
-        user.save();
+        password = (data['password'][0])
+        user.set_password(password)
+        user.save()
         return(Response(UserSerializer(user).data))
  
         
