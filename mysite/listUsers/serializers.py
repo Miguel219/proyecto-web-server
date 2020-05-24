@@ -5,6 +5,8 @@ from lists.serializers import ListSerializer
 from users.serializers import UserSerializer
 
 class ListUserSerializer(serializers.ModelSerializer):
+    list = ListSerializer()
+    user = UserSerializer()
 
     class Meta:
         model = ListUser

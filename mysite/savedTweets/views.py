@@ -9,6 +9,7 @@ from permissions.services import APIPermissionClassFactory
 from savedTweets.models import SavedTweet
 from savedTweets.serializers import SavedTweetSerializer
 from tweets.serializers import TweetSerializer
+from retweets.serializers import RetweetSerializer
 from users.serializers import UserSerializer
 
 

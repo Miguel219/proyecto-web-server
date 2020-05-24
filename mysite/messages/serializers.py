@@ -4,6 +4,8 @@ from messages.models import Message
 from users.serializers import UserSerializer
 
 class MessageSerializer(serializers.ModelSerializer):
+    receiver = UserSerializer()
+    sender = UserSerializer()
 
     class Meta:
         model = Message

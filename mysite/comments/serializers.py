@@ -7,6 +7,9 @@ from retweets.serializers import RetweetSerializer
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    tweet = TweetSerializer()
+    retweet = RetweetSerializer()
     
     class Meta:
         model = Comment

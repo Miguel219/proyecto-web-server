@@ -10,6 +10,8 @@ from comments.models import Comment
 class RetweetSerializer(serializers.ModelSerializer):
     likes = serializers.SerializerMethodField()
     comments = serializers.SerializerMethodField()
+    user = UserSerializer()
+    originalTweet = TweetSerializer()
     
     class Meta:
         model = Retweet
@@ -18,7 +20,6 @@ class RetweetSerializer(serializers.ModelSerializer):
             'date',
             'content',
             'user',
-            'originalUser',
             'originalTweet',
             'likes',
             'comments'

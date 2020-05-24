@@ -11,6 +11,9 @@ from tweets.serializers import TweetSerializer
 from users.serializers import UserSerializer
 from comments.models import Comment
 from comments.serializers import CommentSerializer
+from users.serializers import UserSerializer
+from likes.models import Like
+from likes.serializers import LikeSerializer
 
 
 class TweetViewSet(viewsets.ModelViewSet):
@@ -30,6 +33,7 @@ class TweetViewSet(viewsets.ModelViewSet):
                     'destroy': 'tweets.delete_tweet',
                     'update': False,
                     'get_comments': lambda user, obj, req: user.is_authenticated,
+                    'get_likes': lambda user, obj, req: user.is_authenticated,
                 }
             }
         ),
@@ -48,8 +52,19 @@ class TweetViewSet(viewsets.ModelViewSet):
     def get_comments(self, request, pk=None):
         
         tweet = self.get_object()
-        comments = Comment.objects.filter(tweet=tweet.id)
+        comments = Comment.objects.filter(tweet=tweet.id).order_by('date')
         if(comments.count()>0):
             return(Response(CommentSerializer(comments,many=True).data))
+        else:
+            return Response([])
+
+    #Obtener los likes de un tweet
+    @action(detail=True, url_path='likes', methods=['get'])
+    def get_likes(self, request, pk=None):
+        
+        tweet = self.get_object()
+        likes = Like.objects.filter(tweet=tweet.id).order_by('date')
+        if(likes.count()>0):
+            return(Response(LikeSerializer(likes,many=True).data))
         else:
             return Response([])

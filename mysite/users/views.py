@@ -1,5 +1,6 @@
-from django.shortcuts import render
 import math
+from itertools import chain
+from django.db.models import Q
 
 from guardian.shortcuts import assign_perm
 from rest_framework import viewsets
@@ -9,6 +10,19 @@ from rest_framework.response import Response
 from permissions.services import APIPermissionClassFactory
 from users.models import User
 from users.serializers import UserSerializer
+from tweets.models import Tweet 
+from tweets.serializers import TweetSerializer 
+from retweets.models import Retweet 
+from retweets.serializers import RetweetSerializer 
+from followers.models import Follower
+from followers.serializers import FollowerSerializer
+from messages.models import Message
+from messages.serializers import MessageSerializer
+from lists.models import List
+from lists.serializers import ListSerializer
+from messages.serializers import MessageSerializer
+from savedTweets.models import SavedTweet
+from savedTweets.serializers import SavedTweetSerializer
 
 # Clase UserViewSet
 
@@ -30,6 +44,13 @@ class UserViewSet(viewsets.ModelViewSet):
                     'update': 'users.change_user',
                     'partial_update': 'users.change_user',
                     'set_password': 'users.change_user',
+                    'get_tweets': lambda user, obj, req: user.is_authenticated,
+                    'get_followingTweets': lambda user, obj, req: user.is_authenticated,
+                    'get_followers': lambda user, obj, req: user.is_authenticated,
+                    'get_following': lambda user, obj, req: user.is_authenticated,
+                    'get_messages': lambda user, obj, req: user.is_authenticated,
+                    'get_lists': lambda user, obj, req: user.is_authenticated,
+                    'get_savedTweets': lambda user, obj, req: user.is_authenticated,
 
                 }
             }
@@ -57,5 +78,108 @@ class UserViewSet(viewsets.ModelViewSet):
         user.set_password(password)
         user.save()
         return(Response(UserSerializer(user).data))
- 
+
+    #Obtener los tweets y retweets de un usuario
+    @action(detail=True, url_path='tweets', methods=['get'])
+    def get_tweets(self, request, pk=None):
         
+        user = self.get_object()
+        tweets = Tweet.objects.filter(user=user.id)
+        retweets = Retweet.objects.filter(user=user.id)
+        #Se unen los querySets
+        results_list = list(chain(tweets, retweets))
+        #Se filtran por fechas
+        sorted_list = sorted(results_list, key=lambda instance: instance.date)
+        # Build the list with items based on the FeedItemSerializer fields
+        results = list()
+        for entry in sorted_list:
+            item_type = entry.__class__.__name__.lower()
+            if isinstance(entry, Tweet):
+                serializer = TweetSerializer(entry)
+            if isinstance(entry, Retweet):
+                serializer = RetweetSerializer(entry)
+
+            results.append({'itemType': item_type, 'data': serializer.data})
+
+        return(Response(results))
+    
+    #Obtener los tweets y retweets de los usuarios que sigue un usuario
+    @action(detail=True, url_path='followingTweets', methods=['get'])
+    def get_followingTweets(self, request, pk=None):
+        
+        user = self.get_object()
+        following = Follower.objects.filter(userFollower=user.id)
+        usersFollowing = [ userF.userFollowing.id for userF in following ]
+        tweets = Tweet.objects.filter(user__in=usersFollowing)
+        retweets = Retweet.objects.filter(user__in=usersFollowing)
+        #Se unen los querySets
+        results_list = list(chain(tweets, retweets))
+        #Se filtran por fechas
+        sorted_list = sorted(results_list, key=lambda instance: instance.date)
+        # Build the list with items based on the FeedItemSerializer fields
+        results = list()
+        for entry in sorted_list:
+            item_type = entry.__class__.__name__.lower()
+            if isinstance(entry, Tweet):
+                serializer = TweetSerializer(entry)
+            if isinstance(entry, Retweet):
+                serializer = RetweetSerializer(entry)
+
+            results.append({'itemType': item_type, 'data': serializer.data})
+
+        return(Response(results))
+        
+    #Obtener los followers de un usuario
+    @action(detail=True, url_path='followers', methods=['get'])
+    def get_followers(self, request, pk=None):
+        
+        user = self.get_object()
+        followers = Follower.objects.filter(userFollowing=user.id).order_by('date')
+        if(followers.count()>0):
+            return(Response(FollowerSerializer(followers,many=True).data))
+        else:
+            return Response([])
+        
+    #Obtener los following de un usuario
+    @action(detail=True, url_path='following', methods=['get'])
+    def get_following(self, request, pk=None):
+        
+        user = self.get_object()
+        following = Follower.objects.filter(userFollower=user.id).order_by('date')
+        if(following.count()>0):
+            return(Response(FollowerSerializer(following,many=True).data))
+        else:
+            return Response([])
+        
+    #Obtener los messages de un usuario
+    @action(detail=True, url_path='messages', methods=['get'])
+    def get_messages(self, request, pk=None):
+        
+        user = self.get_object()
+        messages = Message.objects.filter(Q(receiver=user.id) | Q(sender=user.id)).order_by('date')
+        if(messages.count()>0):
+            return(Response(MessageSerializer(messages,many=True).data))
+        else:
+            return Response([])
+        
+    #Obtener las listas de un usuario
+    @action(detail=True, url_path='lists', methods=['get'])
+    def get_lists(self, request, pk=None):
+        
+        user = self.get_object()
+        lists = List.objects.filter(owner=user.id).order_by('date')
+        if(lists.count()>0):
+            return(Response(ListSerializer(lists,many=True).data))
+        else:
+            return Response([])
+        
+    #Obtener los tweets guardados por el usuario de un usuario
+    @action(detail=True, url_path='savedTweets', methods=['get'])
+    def get_savedTweets(self, request, pk=None):
+        
+        user = self.get_object()
+        savedTweets = SavedTweet.objects.filter(user=user.id).order_by('date')
+        if(savedTweets.count()>0):
+            return(Response(SavedTweetSerializer(savedTweets,many=True).data))
+        else:
+            return Response([])

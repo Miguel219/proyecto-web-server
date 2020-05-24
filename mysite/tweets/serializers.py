@@ -11,6 +11,7 @@ class TweetSerializer(serializers.ModelSerializer):
     likes = serializers.SerializerMethodField()
     comments = serializers.SerializerMethodField()
     retweets = serializers.SerializerMethodField()
+    user = UserSerializer()
 
     class Meta:
         model = Tweet
