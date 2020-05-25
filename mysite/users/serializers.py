@@ -19,6 +19,8 @@ class UserSerializer(serializers.ModelSerializer):
             'password',
             'followers',
             'following',
+            'date_joined',
+            'last_login'
         )
 
     def get_followers(self, obj):
