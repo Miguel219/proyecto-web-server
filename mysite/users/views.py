@@ -92,7 +92,7 @@ class UserViewSet(viewsets.ModelViewSet):
         #Se unen los querySets
         results_list = list(chain(tweets, retweets))
         #Se filtran por fechas
-        sorted_list = sorted(results_list, key=lambda instance: instance.date)
+        sorted_list = sorted(results_list, key=lambda instance: instance.date, reverse=True)
         # Build the list with items based on the FeedItemSerializer fields
         results = list()
         for entry in sorted_list:
@@ -118,7 +118,7 @@ class UserViewSet(viewsets.ModelViewSet):
         #Se unen los querySets
         results_list = list(chain(tweets, retweets))
         #Se filtran por fechas
-        sorted_list = sorted(results_list, key=lambda instance: instance.date)
+        sorted_list = sorted(results_list, key=lambda instance: instance.date, reverse=True)
         # Build the list with items based on the FeedItemSerializer fields
         results = list()
         for entry in sorted_list:
@@ -166,8 +166,11 @@ class UserViewSet(viewsets.ModelViewSet):
         chatUser = list(ChatUser.objects.exclude(user=user).filter(chat__in=messages.values('chat')).annotate(otherUser=F('user__username')).values('chat','otherUser').order_by('chat'))
         userMessages = []
         for i in range(len(lastMessages)):
-            userMessages.append({**lastMessages[i], **chatUser[i]})
-        return(Response(userMessages))
+            if lastMessages[i]['chat'] == chatUser[i]['chat']:
+                userMessages.append({**lastMessages[i], **chatUser[i]})
+        #Se filtran por fechas
+        sorted_userMessages = sorted(userMessages, key=lambda instance: instance['date'], reverse=True)
+        return(Response(sorted_userMessages))
         
     #Obtener las listas de un usuario
     @action(detail=True, url_path='lists', methods=['get'])
