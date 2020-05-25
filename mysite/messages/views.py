@@ -9,7 +9,14 @@ from permissions.services import APIPermissionClassFactory
 from messages.models import Message
 from messages.serializers import MessageSerializer
 from users.serializers import UserSerializer
+from chats.serializers import ChatSerializer
+from chatUsers.serializers import ChatUserSerializer
+from chatUsers.models import ChatUser
 
+def check_chatUser(user,request):
+    chatId = (request.POST).get('chat', 0)
+    chatUser = ChatUser.objects.filter(chat=chatId, user=user)
+    return user.is_authenticated and chatUser.count() == 1
 
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
@@ -19,7 +26,7 @@ class MessageViewSet(viewsets.ModelViewSet):
             name='MessagePermission',
             permission_configuration={
                 'base': {
-                    'create': lambda user, req: user.is_authenticated,
+                    'create': check_chatUser,
                     'list': False,
                     
                 },

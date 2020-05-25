@@ -1,6 +1,6 @@
 import math
 from itertools import chain
-from django.db.models import Q
+from django.db.models import Max, F
 
 from guardian.shortcuts import assign_perm
 from rest_framework import viewsets
@@ -18,9 +18,12 @@ from followers.models import Follower
 from followers.serializers import FollowerSerializer
 from messages.models import Message
 from messages.serializers import MessageSerializer
+from chatUsers.models import ChatUser 
+from chatUsers.serializers import ChatUserSerializer
+from chats.models import Chat 
+from chats.serializers import ChatSerializer
 from lists.models import List
 from lists.serializers import ListSerializer
-from messages.serializers import MessageSerializer
 from savedTweets.models import SavedTweet
 from savedTweets.serializers import SavedTweetSerializer
 
@@ -156,11 +159,15 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_messages(self, request, pk=None):
         
         user = self.get_object()
-        messages = Message.objects.filter(Q(receiver=user.id) | Q(sender=user.id)).order_by('date')
-        if(messages.count()>0):
-            return(Response(MessageSerializer(messages,many=True).data))
-        else:
-            return Response([])
+        messages = Message.objects.filter(chat__in=ChatUser.objects.filter(user=user).values('chat'))
+        lastMessages = list(messages.annotate(senderUser=F('sender__username')).values('chat','senderUser','content','date').filter(
+            date__in=messages.values('chat').annotate(lastdate=Max('date')).values('lastdate'),
+            chat__in=messages.values('chat').annotate(lastdate=Max('date')).values('chat')).order_by('chat'))
+        chatUser = list(ChatUser.objects.exclude(user=user).filter(chat__in=messages.values('chat')).annotate(otherUser=F('user__username')).values('chat','otherUser').order_by('chat'))
+        userMessages = []
+        for i in range(len(lastMessages)):
+            userMessages.append({**lastMessages[i], **chatUser[i]})
+        return(Response(userMessages))
         
     #Obtener las listas de un usuario
     @action(detail=True, url_path='lists', methods=['get'])

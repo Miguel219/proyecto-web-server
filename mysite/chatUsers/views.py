@@ -6,19 +6,18 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from permissions.services import APIPermissionClassFactory
-from comments.models import Comment
-from comments.serializers import CommentSerializer
+from chatUsers.models import ChatUser
+from chatUsers.serializers import ChatUserSerializer
 from users.serializers import UserSerializer
-from tweets.serializers import TweetSerializer
-from retweets.serializers import RetweetSerializer
+from chats.serializers import ChatSerializer
 
 
-class CommentViewSet(viewsets.ModelViewSet):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
+class ChatUserViewSet(viewsets.ModelViewSet):
+    queryset = ChatUser.objects.all()
+    serializer_class = ChatUserSerializer
     permission_classes = (
         APIPermissionClassFactory(
-            name='CommentPermission',
+            name='ChatUserPermission',
             permission_configuration={
                 'base': {
                     'create': lambda user, req: user.is_authenticated,
@@ -26,18 +25,19 @@ class CommentViewSet(viewsets.ModelViewSet):
                     
                 },
                 'instance': {
-                    'retrieve': lambda user, obj, req: user.is_authenticated,
-                    'destroy': 'comments.delete_comment',
+                    'retrieve': False,
+                    'destroy': 'ChatUsers.delete_chatuser',
                     'update': False,
                 }
             }
         ),
     )
 
-    #Cunando se crea el comment asignar permiso de eliminar
+    #Cuando se crea la relacion del chat con el usuario asignar permiso de eliminar esa relacion
     def perform_create(self, serializer):
-        comment = serializer.save()
+        chatUser = serializer.save()
         user = self.request.user
-        assign_perm('comments.delete_comment', user, comment)
+        assign_perm('ChatUsers.delete_chatuser', user, chatUser)
         
-        return Response(['serializer.data'])
+        return Response(serializer.data)
+        

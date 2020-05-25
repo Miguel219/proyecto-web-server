@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from tweets.models import Tweet
+from users.models import User
 from users.serializers import UserSerializer
 from likes.models import Like
 from comments.models import Comment
@@ -11,7 +12,6 @@ class TweetSerializer(serializers.ModelSerializer):
     likes = serializers.SerializerMethodField()
     comments = serializers.SerializerMethodField()
     retweets = serializers.SerializerMethodField()
-    user = UserSerializer()
 
     class Meta:
         model = Tweet
@@ -36,3 +36,10 @@ class TweetSerializer(serializers.ModelSerializer):
     def get_retweets(self, obj):
         retweets = Retweet.objects.filter(originalTweet=obj.id)
         return retweets.count()
+
+    #Funcion de representacion que realiza un override al serializer
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['user'] = UserSerializer(
+            User.objects.get(pk=data['user'])).data
+        return data

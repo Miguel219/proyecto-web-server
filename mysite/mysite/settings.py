@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     'lists.apps.ListsConfig',
     'listUsers.apps.ListUsersConfig',
     'messages.apps.MessagesConfig',
+    'chats.apps.ChatsConfig',
+    'chatUsers.apps.ChatUsersConfig',
     'retweets.apps.RetweetsConfig',
     'savedTweets.apps.SavedTweetsConfig',
     'tweets.apps.TweetsConfig'

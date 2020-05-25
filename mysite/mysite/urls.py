@@ -31,6 +31,8 @@ from likes.views import LikeViewSet
 from lists.views import ListViewSet
 from listUsers.views import ListUserViewSet
 from messages.views import MessageViewSet
+from chats.views import ChatViewSet
+from chatUsers.views import ChatUserViewSet
 from retweets.views import RetweetViewSet
 from savedTweets.views import SavedTweetViewSet
 from tweets.views import TweetViewSet
@@ -46,6 +48,8 @@ router.register(r'likes', LikeViewSet)
 router.register(r'lists', ListViewSet)
 router.register(r'listUsers', ListUserViewSet)
 router.register(r'messages', MessageViewSet)
+router.register(r'chats', ChatViewSet)
+router.register(r'chatUsers', ChatUserViewSet)
 router.register(r'retweets', RetweetViewSet)
 router.register(r'savedTweets', SavedTweetViewSet)
 router.register(r'tweets', TweetViewSet)

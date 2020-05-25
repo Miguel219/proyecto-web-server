@@ -1,11 +1,10 @@
 from rest_framework import serializers
 
 from messages.models import Message
+from users.models import User
 from users.serializers import UserSerializer
 
 class MessageSerializer(serializers.ModelSerializer):
-    receiver = UserSerializer()
-    sender = UserSerializer()
 
     class Meta:
         model = Message
@@ -14,6 +13,12 @@ class MessageSerializer(serializers.ModelSerializer):
             'content',
             'date',
             'sender',
-            'receiver'
+            'chat'
         )
         
+    #Funcion de representacion que realiza un override al serializer
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['sender'] = UserSerializer(
+            User.objects.get(pk=data['sender'])).data
+        return data
