@@ -102,7 +102,7 @@ class UserViewSet(viewsets.ModelViewSet):
             if isinstance(entry, Retweet):
                 serializer = RetweetSerializer(entry)
 
-            results.append({'itemType': item_type, 'data': serializer.data})
+            results.append({'id': item_type + '-' + str(serializer.data['id']), 'itemType': item_type, 'data': serializer.data})
 
         return(Response(results))
     
@@ -132,7 +132,7 @@ class UserViewSet(viewsets.ModelViewSet):
             if isinstance(entry, Retweet):
                 serializer = RetweetSerializer(entry)
 
-            results.append({'itemType': item_type, 'data': serializer.data})
+            results.append({'id': item_type + '-' + str(serializer.data['id']), 'itemType': item_type, 'data': serializer.data})
 
         return(Response(results))
         
