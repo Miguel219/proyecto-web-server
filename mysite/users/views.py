@@ -14,6 +14,8 @@ from tweets.models import Tweet
 from tweets.serializers import TweetSerializer 
 from retweets.models import Retweet 
 from retweets.serializers import RetweetSerializer 
+from likes.models import Like 
+from likes.serializers import LikeSerializer 
 from followers.models import Follower
 from followers.serializers import FollowerSerializer
 from messages.models import Message
@@ -48,6 +50,7 @@ class UserViewSet(viewsets.ModelViewSet):
                     'partial_update': 'users.change_user',
                     'set_password': 'users.change_user',
                     'get_tweets': lambda user, obj, req: user.is_authenticated,
+                    'get_likedTweets': lambda user, obj, req: user.is_authenticated,
                     'get_followingTweets': lambda user, obj, req: user.is_authenticated,
                     'get_followers': lambda user, obj, req: user.is_authenticated,
                     'get_following': lambda user, obj, req: user.is_authenticated,
@@ -89,6 +92,30 @@ class UserViewSet(viewsets.ModelViewSet):
         user = self.get_object()
         tweets = Tweet.objects.filter(user=user.id)
         retweets = Retweet.objects.filter(user=user.id)
+        #Se unen los querySets
+        results_list = list(chain(tweets, retweets))
+        #Se filtran por fechas
+        sorted_list = sorted(results_list, key=lambda instance: instance.date, reverse=True)
+        # Build the list with items based on the FeedItemSerializer fields
+        results = list()
+        for entry in sorted_list:
+            item_type = entry.__class__.__name__.lower()
+            if isinstance(entry, Tweet):
+                serializer = TweetSerializer(entry)
+            if isinstance(entry, Retweet):
+                serializer = RetweetSerializer(entry)
+
+            results.append({'id': item_type + '-' + str(serializer.data['id']), 'itemType': item_type, 'data': serializer.data})
+
+        return(Response(results))
+
+    #Obtener los tweets y retweets que le han gustado a un usuario
+    @action(detail=True, url_path='likedTweets', methods=['get'])
+    def get_likedTweets(self, request, pk=None):
+        
+        user = self.get_object()
+        tweets = Tweet.objects.filter(id__in=Like.objects.filter(user=user.id).values('tweet'))
+        retweets = Retweet.objects.filter(id__in=Like.objects.filter(user=user.id).values('retweet'))
         #Se unen los querySets
         results_list = list(chain(tweets, retweets))
         #Se filtran por fechas
