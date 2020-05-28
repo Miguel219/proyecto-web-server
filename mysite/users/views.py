@@ -190,8 +190,10 @@ class UserViewSet(viewsets.ModelViewSet):
     #Obtener los usuarios del search
     @action(detail=False, url_path='usersSearch', methods=['post'])
     def get_usersSearch(self, request, pk=None):
+        
+        user = request.user
         search = request.data['search']
-        users = User.objects.filter(username__icontains=search)
+        users = User.objects.exclude(username=user).filter(username__icontains=search)
         if(users.count()>0):
             return(Response(UserSerializer(users,many=True,context={'request':request}).data))
         else:
@@ -226,10 +228,10 @@ class UserViewSet(viewsets.ModelViewSet):
         
         user = self.get_object()
         messages = Message.objects.filter(chat__in=ChatUser.objects.filter(user=user).values('chat'))
-        lastMessages = list(messages.annotate(senderUser=F('sender__username')).values('chat','senderUser','content','date').filter(
+        lastMessages = list(messages.values('chat','content','date').filter(
             date__in=messages.values('chat').annotate(lastdate=Max('date')).values('lastdate'),
             chat__in=messages.values('chat').annotate(lastdate=Max('date')).values('chat')).order_by('chat'))
-        chatUser = list(ChatUser.objects.exclude(user=user).filter(chat__in=messages.values('chat')).annotate(otherUser=F('user__username')).values('chat','otherUser').order_by('chat'))
+        chatUser = list(ChatUser.objects.exclude(user=user).filter(chat__in=messages.values('chat')).annotate(username=F('user__username'),userid=F('user__id'),first_name=F('user__first_name')).values('chat','userid','username','first_name').order_by('chat'))
         userMessages = []
         for i in range(len(lastMessages)):
             if lastMessages[i]['chat'] == chatUser[i]['chat']:
