@@ -7,6 +7,7 @@ from likes.models import Like
 from comments.models import Comment
 from retweets.models import Retweet
 from followers.models import Follower
+from savedTweets.models import SavedTweet
 
 
 class TweetSerializer(serializers.ModelSerializer):
@@ -18,6 +19,7 @@ class TweetSerializer(serializers.ModelSerializer):
     user_followed_by_me = serializers.SerializerMethodField()
     is_retweeted = serializers.SerializerMethodField()
     is_liked = serializers.SerializerMethodField()
+    is_saved = serializers.SerializerMethodField()
 
     class Meta:
         model = Tweet
@@ -34,6 +36,7 @@ class TweetSerializer(serializers.ModelSerializer):
             'user_followed_by_me',
             'is_retweeted',
             'is_liked',
+            'is_saved'
         )
 
     def get_likes(self, obj):
@@ -92,6 +95,15 @@ class TweetSerializer(serializers.ModelSerializer):
                 user = request.user
                 retweets=Retweet.objects.filter(user=user.id,originalTweet=obj.id)
                 return retweets.count()>0
+            return False 
+
+    def get_is_saved(self, obj):
+            user = None
+            request = self.context.get("request")
+            if request and hasattr(request, "user"):
+                user = request.user
+                savedTweets=SavedTweet.objects.filter(user=user.id,tweet=obj.id)
+                return savedTweets.count()>0
             return False 
 
     #Funcion de representacion que realiza un override al serializer
