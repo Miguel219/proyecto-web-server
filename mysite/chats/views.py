@@ -53,6 +53,6 @@ class ChatViewSet(viewsets.ModelViewSet):
         chat = self.get_object()
         chatMessages = Message.objects.filter(chat=chat.id).order_by('date')
         if(chatMessages.count()>0):
-            return(Response(MessageSerializer(chatMessages,many=True).data))
+            return(Response(MessageSerializer(chatMessages,many=True,context={'request':request}).data))
         else:
             return Response([])
