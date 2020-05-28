@@ -188,7 +188,7 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response([])
         
     #Obtener los usuarios del search
-    @action(detail=False, url_path='usersSearch', methods=['get'])
+    @action(detail=False, url_path='usersSearch', methods=['post'])
     def get_usersSearch(self, request, pk=None):
         search = request.data['search']
         users = User.objects.filter(username__icontains=search)
@@ -198,7 +198,7 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response([])
         
     #Obtener los tweets del search
-    @action(detail=False, url_path='tweetsSearch', methods=['get'])
+    @action(detail=False, url_path='tweetsSearch', methods=['post'])
     def get_tweetsSearch(self, request, pk=None):
         search = request.data['search']
         tweets = Tweet.objects.filter(content__icontains=search)
