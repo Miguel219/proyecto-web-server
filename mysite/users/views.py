@@ -103,9 +103,9 @@ class UserViewSet(viewsets.ModelViewSet):
         for entry in sorted_list:
             item_type = entry.__class__.__name__.lower()
             if isinstance(entry, Tweet):
-                serializer = TweetSerializer(entry)
+                serializer = TweetSerializer(entry,context={'request':request})
             if isinstance(entry, Retweet):
-                serializer = RetweetSerializer(entry)
+                serializer = RetweetSerializer(entry,context={'request':request})
 
             results.append({'id': item_type + '-' + str(serializer.data['id']), 'itemType': item_type, 'data': serializer.data})
 
@@ -127,9 +127,9 @@ class UserViewSet(viewsets.ModelViewSet):
         for entry in sorted_list:
             item_type = entry.__class__.__name__.lower()
             if isinstance(entry, Tweet):
-                serializer = TweetSerializer(entry)
+                serializer = TweetSerializer(entry,context={'request':request})
             if isinstance(entry, Retweet):
-                serializer = RetweetSerializer(entry)
+                serializer = RetweetSerializer(entry,context={'request':request})
 
             results.append({'id': item_type + '-' + str(serializer.data['id']), 'itemType': item_type, 'data': serializer.data})
 
@@ -157,9 +157,9 @@ class UserViewSet(viewsets.ModelViewSet):
         for entry in sorted_list:
             item_type = entry.__class__.__name__.lower()
             if isinstance(entry, Tweet):
-                serializer = TweetSerializer(entry)
+                serializer = TweetSerializer(entry,context={'request':request})
             if isinstance(entry, Retweet):
-                serializer = RetweetSerializer(entry)
+                serializer = RetweetSerializer(entry,context={'request':request})
 
             results.append({'id': item_type + '-' + str(serializer.data['id']), 'itemType': item_type, 'data': serializer.data})
 
@@ -170,9 +170,9 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_followers(self, request, pk=None):
         
         user = self.get_object()
-        followers = Follower.objects.filter(userFollowing=user.id).order_by('date')
+        followers = User.objects.filter(id__in=Follower.objects.filter(userFollowing=user.id).order_by('date').values('userFollower'))
         if(followers.count()>0):
-            return(Response(FollowerSerializer(followers,many=True).data))
+            return(Response(UserSerializer(followers,many=True,context={'request':request}).data))
         else:
             return Response([])
         
@@ -181,9 +181,9 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_following(self, request, pk=None):
         
         user = self.get_object()
-        following = Follower.objects.filter(userFollower=user.id).order_by('date')
+        following  = User.objects.filter(id__in=Follower.objects.filter(userFollower=user.id).order_by('date').values('userFollowing'))
         if(following.count()>0):
-            return(Response(FollowerSerializer(following,many=True).data))
+            return(Response(UserSerializer(following,many=True,context={'request':request}).data))
         else:
             return Response([])
         
@@ -193,7 +193,7 @@ class UserViewSet(viewsets.ModelViewSet):
         search = request.data['search']
         users = User.objects.filter(username__icontains=search)
         if(users.count()>0):
-            return(Response(UserSerializer(users,many=True).data))
+            return(Response(UserSerializer(users,many=True,context={'request':request}).data))
         else:
             return Response([])
         
@@ -212,9 +212,9 @@ class UserViewSet(viewsets.ModelViewSet):
         for entry in sorted_list:
             item_type = entry.__class__.__name__.lower()
             if isinstance(entry, Tweet):
-                serializer = TweetSerializer(entry)
+                serializer = TweetSerializer(entry,context={'request':request})
             if isinstance(entry, Retweet):
-                serializer = RetweetSerializer(entry)
+                serializer = RetweetSerializer(entry,context={'request':request})
 
             results.append({'id': item_type + '-' + str(serializer.data['id']), 'itemType': item_type, 'data': serializer.data})
 
@@ -249,13 +249,28 @@ class UserViewSet(viewsets.ModelViewSet):
         else:
             return Response([])
         
+
+
     #Obtener los tweets guardados por el usuario de un usuario
     @action(detail=True, url_path='savedTweets', methods=['get'])
     def get_savedTweets(self, request, pk=None):
-        
         user = self.get_object()
-        savedTweets = SavedTweet.objects.filter(user=user.id).order_by('date')
-        if(savedTweets.count()>0):
-            return(Response(SavedTweetSerializer(savedTweets,many=True).data))
-        else:
-            return Response([])
+        #Se consultan los tweets y retweets de todos los usuarios en la lista 
+        tweets = Tweet.objects.filter(id__in=SavedTweet.objects.filter(user=user.id).order_by('date').values('tweet'))
+        retweets = Retweet.objects.filter(id__in=SavedTweet.objects.filter(user=user.id).order_by('date').values('retweet'))
+        #Se unen los querySets
+        results_list = list(chain(tweets, retweets))
+        #Se filtran por fechas
+        sorted_list = sorted(results_list, key=lambda instance: instance.date, reverse=True)
+        # Build the list with items based on the FeedItemSerializer fields
+        results = list()
+        for entry in sorted_list:
+            item_type = entry.__class__.__name__.lower()
+            if isinstance(entry, Tweet):
+                serializer = TweetSerializer(entry,context={'request':request})
+            if isinstance(entry, Retweet):
+                serializer = RetweetSerializer(entry,context={'request':request})
+
+            results.append({'id': item_type + '-' + str(serializer.data['id']), 'itemType': item_type, 'data': serializer.data})
+
+        return(Response(results))

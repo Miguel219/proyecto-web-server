@@ -50,7 +50,7 @@ class RetweetSerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         if request and hasattr(request, "user"):
             user = request.user
-            follows=Follower.objects.filter(userFollowing__exact=user.id,userFollower__exact=obj.user.id)
+            follows=Follower.objects.filter(userFollowing__exact=obj.user.id,userFollower__exact=user.id)
             return follows.count()>0
         return False    
             
@@ -60,7 +60,7 @@ class RetweetSerializer(serializers.ModelSerializer):
             request = self.context.get("request")
             if request and hasattr(request, "user"):
                 user = request.user
-                follows=Follower.objects.filter(userFollowing__exact=obj.user.id,userFollower__exact=user.id)
+                follows=Follower.objects.filter(userFollowing__exact=user.id,userFollower__exact=obj.user.id)
                 return follows.count()>0
             return False   
 
@@ -93,8 +93,9 @@ class RetweetSerializer(serializers.ModelSerializer):
     #Funcion de representacion que realiza un override al serializer
     def to_representation(self, instance):
         data = super().to_representation(instance)
+        request = self.context.get("request")
         data['originalTweet'] = TweetSerializer(
-            Tweet.objects.get(pk=data['originalTweet'])).data
+            Tweet.objects.get(pk=data['originalTweet']),context={'request':request}).data
         data['user'] = UserSerializer(
-            User.objects.get(pk=data['user'])).data
+            User.objects.get(pk=data['user']),context={'request':request}).data
         return data

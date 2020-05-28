@@ -18,6 +18,7 @@ class ListSerializer(serializers.ModelSerializer):
     #Funcion de representacion que realiza un override al serializer
     def to_representation(self, instance):
         data = super().to_representation(instance)
+        request = self.context.get("request")
         data['owner'] = UserSerializer(
-            User.objects.get(pk=data['owner'])).data
+            User.objects.get(pk=data['owner']),context={'request':request}).data
         return data

@@ -43,7 +43,7 @@ class UserSerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         if request and hasattr(request, "user"):
             user = request.user
-            follows=Follower.objects.filter(userFollowing__exact=user.id,userFollower__exact=obj.id)
+            follows=Follower.objects.filter(userFollowing__exact=obj.id,userFollower__exact=user.id)
             return follows.count()>0
         return False    
             
@@ -53,7 +53,7 @@ class UserSerializer(serializers.ModelSerializer):
             request = self.context.get("request")
             if request and hasattr(request, "user"):
                 user = request.user
-                follows=Follower.objects.filter(userFollowing__exact=obj.id,userFollower__exact=user.id)
+                follows=Follower.objects.filter(userFollowing__exact=user.id,userFollower__exact=obj.id)
                 return follows.count()>0
             return False   
 
