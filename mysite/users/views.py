@@ -54,6 +54,8 @@ class UserViewSet(viewsets.ModelViewSet):
                     'get_followingTweets': lambda user, obj, req: user.is_authenticated,
                     'get_followers': lambda user, obj, req: user.is_authenticated,
                     'get_following': lambda user, obj, req: user.is_authenticated,
+                    'get_usersSearch': lambda user, obj, req: user.is_authenticated,
+                    'get_tweetsSearch': lambda user, obj, req: user.is_authenticated,
                     'get_messages': lambda user, obj, req: user.is_authenticated,
                     'get_lists': lambda user, obj, req: user.is_authenticated,
                     'get_savedTweets': lambda user, obj, req: user.is_authenticated,
@@ -184,6 +186,39 @@ class UserViewSet(viewsets.ModelViewSet):
             return(Response(FollowerSerializer(following,many=True).data))
         else:
             return Response([])
+        
+    #Obtener los usuarios del search
+    @action(detail=False, url_path='usersSearch', methods=['get'])
+    def get_usersSearch(self, request, pk=None):
+        search = request.data['search']
+        users = User.objects.filter(username__icontains=search)
+        if(users.count()>0):
+            return(Response(UserSerializer(users,many=True).data))
+        else:
+            return Response([])
+        
+    #Obtener los tweets del search
+    @action(detail=False, url_path='tweetsSearch', methods=['get'])
+    def get_tweetsSearch(self, request, pk=None):
+        search = request.data['search']
+        tweets = Tweet.objects.filter(content__icontains=search)
+        retweets = Retweet.objects.filter(content__icontains=search)
+        #Se unen los querySets
+        results_list = list(chain(tweets, retweets))
+        #Se filtran por fechas
+        sorted_list = sorted(results_list, key=lambda instance: instance.date, reverse=True)
+        # Build the list with items based on the FeedItemSerializer fields
+        results = list()
+        for entry in sorted_list:
+            item_type = entry.__class__.__name__.lower()
+            if isinstance(entry, Tweet):
+                serializer = TweetSerializer(entry)
+            if isinstance(entry, Retweet):
+                serializer = RetweetSerializer(entry)
+
+            results.append({'id': item_type + '-' + str(serializer.data['id']), 'itemType': item_type, 'data': serializer.data})
+
+        return(Response(results))
         
     #Obtener los messages de un usuario
     @action(detail=True, url_path='messages', methods=['get'])
