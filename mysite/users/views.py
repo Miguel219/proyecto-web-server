@@ -68,7 +68,6 @@ class UserViewSet(viewsets.ModelViewSet):
     #Dar permisos al usuario sobre el mismo
     def perform_create(self, serializer):
         user = serializer.save()
-        print(user.password)
         user.set_password(user.password)
         user.save()
         assign_perm('users.delete_user', user, user)

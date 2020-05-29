@@ -75,7 +75,6 @@ class TweetSerializer(serializers.ModelSerializer):
             request = self.context.get("request")
             if request and hasattr(request, "user"):
                 user = request.user
-                print(obj.user.id)
                 return user.id == obj.user.id
             return False 
     
