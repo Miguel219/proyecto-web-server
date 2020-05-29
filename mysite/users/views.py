@@ -102,12 +102,16 @@ class UserViewSet(viewsets.ModelViewSet):
         results = list()
         for entry in sorted_list:
             item_type = entry.__class__.__name__.lower()
+            
             if isinstance(entry, Tweet):
                 serializer = TweetSerializer(entry,context={'request':request})
+                results.append({'id': item_type + '-' + str(serializer.data['id']), 'itemType': item_type, 'data': serializer.data,'user_retweet':None,'retweet_id':None})
             if isinstance(entry, Retweet):
-                serializer = RetweetSerializer(entry,context={'request':request})
-
-            results.append({'id': item_type + '-' + str(serializer.data['id']), 'itemType': item_type, 'data': serializer.data})
+                serializer = TweetSerializer(entry.originalTweet,context={'request':request})
+               
+                retweetSerializer=RetweetSerializer(entry,context={'request':request})
+                userSerializer = UserSerializer(entry.user,context={'request':request})
+                results.append({'id': item_type + '-' + str(retweetSerializer.data['id']), 'itemType': item_type, 'data': serializer.data,'user_retweet':userSerializer.data,'retweet_id':retweetSerializer.data['id']})
 
         return(Response(results))
 
@@ -126,12 +130,16 @@ class UserViewSet(viewsets.ModelViewSet):
         results = list()
         for entry in sorted_list:
             item_type = entry.__class__.__name__.lower()
+            
             if isinstance(entry, Tweet):
                 serializer = TweetSerializer(entry,context={'request':request})
+                results.append({'id': item_type + '-' + str(serializer.data['id']), 'itemType': item_type, 'data': serializer.data,'user_retweet':None,'retweet_id':None})
             if isinstance(entry, Retweet):
-                serializer = RetweetSerializer(entry,context={'request':request})
-
-            results.append({'id': item_type + '-' + str(serializer.data['id']), 'itemType': item_type, 'data': serializer.data})
+                serializer = TweetSerializer(entry.originalTweet,context={'request':request})
+               
+                retweetSerializer=RetweetSerializer(entry,context={'request':request})
+                userSerializer = UserSerializer(entry.user,context={'request':request})
+                results.append({'id': item_type + '-' + str(retweetSerializer.data['id']), 'itemType': item_type, 'data': serializer.data,'user_retweet':userSerializer.data,'retweet_id':retweetSerializer.data['id']})
 
         return(Response(results))
     
@@ -156,12 +164,16 @@ class UserViewSet(viewsets.ModelViewSet):
         results = list()
         for entry in sorted_list:
             item_type = entry.__class__.__name__.lower()
+            
             if isinstance(entry, Tweet):
                 serializer = TweetSerializer(entry,context={'request':request})
+                results.append({'id': item_type + '-' + str(serializer.data['id']), 'itemType': item_type, 'data': serializer.data,'user_retweet':None,'retweet_id':None})
             if isinstance(entry, Retweet):
-                serializer = RetweetSerializer(entry,context={'request':request})
-
-            results.append({'id': item_type + '-' + str(serializer.data['id']), 'itemType': item_type, 'data': serializer.data})
+                serializer = TweetSerializer(entry.originalTweet,context={'request':request})
+               
+                retweetSerializer=RetweetSerializer(entry,context={'request':request})
+                userSerializer = UserSerializer(entry.user,context={'request':request})
+                results.append({'id': item_type + '-' + str(retweetSerializer.data['id']), 'itemType': item_type, 'data': serializer.data,'user_retweet':userSerializer.data,'retweet_id':retweetSerializer.data['id']})
 
         return(Response(results))
         
@@ -213,12 +225,16 @@ class UserViewSet(viewsets.ModelViewSet):
         results = list()
         for entry in sorted_list:
             item_type = entry.__class__.__name__.lower()
+            
             if isinstance(entry, Tweet):
                 serializer = TweetSerializer(entry,context={'request':request})
+                results.append({'id': item_type + '-' + str(serializer.data['id']), 'itemType': item_type, 'data': serializer.data,'user_retweet':None,'retweet_id':None})
             if isinstance(entry, Retweet):
-                serializer = RetweetSerializer(entry,context={'request':request})
-
-            results.append({'id': item_type + '-' + str(serializer.data['id']), 'itemType': item_type, 'data': serializer.data})
+                serializer = TweetSerializer(entry.originalTweet,context={'request':request})
+               
+                retweetSerializer=RetweetSerializer(entry,context={'request':request})
+                userSerializer = UserSerializer(entry.user,context={'request':request})
+                results.append({'id': item_type + '-' + str(retweetSerializer.data['id']), 'itemType': item_type, 'data': serializer.data,'user_retweet':userSerializer.data,'retweet_id':retweetSerializer.data['id']})
 
         return(Response(results))
         
@@ -268,11 +284,15 @@ class UserViewSet(viewsets.ModelViewSet):
         results = list()
         for entry in sorted_list:
             item_type = entry.__class__.__name__.lower()
+            
             if isinstance(entry, Tweet):
                 serializer = TweetSerializer(entry,context={'request':request})
+                results.append({'id': item_type + '-' + str(serializer.data['id']), 'itemType': item_type, 'data': serializer.data,'user_retweet':None,'retweet_id':None})
             if isinstance(entry, Retweet):
-                serializer = RetweetSerializer(entry,context={'request':request})
-
-            results.append({'id': item_type + '-' + str(serializer.data['id']), 'itemType': item_type, 'data': serializer.data})
+                serializer = TweetSerializer(entry.originalTweet,context={'request':request})
+               
+                retweetSerializer=RetweetSerializer(entry,context={'request':request})
+                userSerializer = UserSerializer(entry.user,context={'request':request})
+                results.append({'id': item_type + '-' + str(retweetSerializer.data['id']), 'itemType': item_type, 'data': serializer.data,'user_retweet':userSerializer.data,'retweet_id':retweetSerializer.data['id']})
 
         return(Response(results))
