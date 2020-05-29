@@ -14,7 +14,7 @@ from chatUsers.serializers import ChatUserSerializer
 from chatUsers.models import ChatUser
 
 def check_chatUser(user,request):
-    chatId = (request.POST).get('chat', 0)
+    chatId = request.data['chat']
     chatUser = ChatUser.objects.filter(chat=chatId, user=user)
     return user.is_authenticated and chatUser.count() == 1
 
