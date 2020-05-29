@@ -92,7 +92,7 @@ class UserViewSet(viewsets.ModelViewSet):
         
         user = self.get_object()
         tweets = Tweet.objects.filter(user=user.id)
-        retweets = Retweet.objects.filter(user=user.id)
+        retweets = Retweet.objects.exclude(originalTweet__in=tweets).filter(user=user.id)
         #Se unen los querySets
         results_list = list(chain(tweets, retweets))
         #Se filtran por fechas
@@ -120,7 +120,7 @@ class UserViewSet(viewsets.ModelViewSet):
         
         user = self.get_object()
         tweets = Tweet.objects.filter(id__in=Like.objects.filter(user=user.id).values('tweet'))
-        retweets = Retweet.objects.filter(id__in=Like.objects.filter(user=user.id).values('retweet'))
+        retweets = Retweet.objects.exclude(originalTweet__in=tweets).filter(id__in=Like.objects.filter(user=user.id).values('retweet'))
         #Se unen los querySets
         results_list = list(chain(tweets, retweets))
         #Se filtran por fechas
