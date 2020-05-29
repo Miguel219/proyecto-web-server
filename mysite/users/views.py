@@ -151,11 +151,14 @@ class UserViewSet(viewsets.ModelViewSet):
         #Se guardan los ids de los usuarios que sigue el usuario
         following = Follower.objects.filter(userFollower=user.id)
         usersFollowing = [ userF.userFollowing.id for userF in following ]
-        #Se agrega el id del usuario
-        usersFollowing.append(user.id)
+       
         #Se consultan los tweets y retweets de todos los usuarios en la lista 
-        tweets = Tweet.objects.filter(user__in=usersFollowing)
         retweets = Retweet.objects.filter(user__in=usersFollowing)
+         #Se agrega el id del usuario
+        usersFollowing.append(user.id)
+        tweets = Tweet.objects.filter(user__in=usersFollowing)
+         
+       
         #Se unen los querySets
         results_list = list(chain(tweets, retweets))
         #Se filtran por fechas

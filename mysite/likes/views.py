@@ -7,10 +7,13 @@ from rest_framework.response import Response
 
 from permissions.services import APIPermissionClassFactory
 from likes.models import Like
+from tweets.models import Tweet
 from likes.serializers import LikeSerializer
 from users.serializers import UserSerializer
 from tweets.serializers import TweetSerializer
 from retweets.serializers import RetweetSerializer
+
+
 
 
 class LikeViewSet(viewsets.ModelViewSet):
@@ -23,6 +26,7 @@ class LikeViewSet(viewsets.ModelViewSet):
                 'base': {
                     'create': lambda user, req: user.is_authenticated,
                     'list': False,
+                    'unlike': lambda user, req: user.is_authenticated and req.data['user']==user.id,
                     
                 },
                 'instance': {
@@ -41,3 +45,13 @@ class LikeViewSet(viewsets.ModelViewSet):
         assign_perm('likes.delete_like', user, like)
         
         return Response(serializer.data)
+
+    #Eliminar un like
+    @action(detail=False, url_path='unlike', methods=['post'])
+    def unlike(self, request, pk=None):
+        tweet = request.data['tweet']
+        user = request.user
+        likes = Like.objects.filter(tweet__exact=tweet,user__exact=user)
+        likes.delete()
+        return Response(True); 
+

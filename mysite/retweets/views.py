@@ -26,7 +26,7 @@ class RetweetViewSet(viewsets.ModelViewSet):
                 'base': {
                     'create': lambda user, req: user.is_authenticated,
                     'list': False,
-                    
+                    'unretweet': lambda user, req: user.is_authenticated and req.data['user']==user.id,
                 },
                 'instance': {
                     'retrieve': lambda user, obj, req: user.is_authenticated,
@@ -34,6 +34,7 @@ class RetweetViewSet(viewsets.ModelViewSet):
                     'update': False,
                     'get_comments': lambda user, obj, req: user.is_authenticated,
                     'get_likes': lambda user, obj, req: user.is_authenticated,
+
                 }
             }
         ),
@@ -68,3 +69,12 @@ class RetweetViewSet(viewsets.ModelViewSet):
             return(Response(LikeSerializer(likes,many=True).data))
         else:
             return Response([])
+
+    #Eliminar un retweet
+    @action(detail=False, url_path='unretweet', methods=['post'])
+    def unretweet(self, request, pk=None):
+        tweet = request.data['originalTweet']
+        user = request.user
+        retweets = Retweet.objects.filter(originalTweet__exact=tweet,user__exact=user)
+        retweets.delete()
+        return Response(True);

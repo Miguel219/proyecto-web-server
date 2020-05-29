@@ -23,6 +23,7 @@ class SavedTweetViewSet(viewsets.ModelViewSet):
                 'base': {
                     'create': lambda user, req: user.is_authenticated,
                     'list': False,
+                    'unsave': lambda user, req: user.is_authenticated and req.data['user']==user.id,
                     
                 },
                 'instance': {
@@ -41,4 +42,12 @@ class SavedTweetViewSet(viewsets.ModelViewSet):
         assign_perm('savedTweets.delete_savedtweet', user, savedTweet)
         
         return Response(serializer.data)
-        
+
+   #Eliminar un saved tweet
+    @action(detail=False, url_path='unsave', methods=['post'])
+    def unsave(self, request, pk=None):
+        tweet = request.data['tweet']
+        user = request.user
+        savedTweets = SavedTweet.objects.filter(tweet__exact=tweet,user__exact=user)
+        savedTweets.delete()
+        return Response(True);
