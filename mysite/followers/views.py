@@ -21,7 +21,7 @@ class FollowerViewSet(viewsets.ModelViewSet):
                 'base': {
                     'create': lambda user, req: user.is_authenticated,
                     'list': False,
-                    
+                    'unfollow': lambda user, req: user.is_authenticated and req.data['userFollower']==user.id,                    
                 },
                 'instance': {
                     'retrieve': lambda user, obj, req: user.is_authenticated,
@@ -39,4 +39,12 @@ class FollowerViewSet(viewsets.ModelViewSet):
         assign_perm('followers.delete_follower', user, follower)
         
         return Response(serializer.data)
-        
+
+    #Eliminar un Follow
+    @action(detail=False, url_path='unfollow', methods=['post'])
+    def unfollow(self, request, pk=None):
+        userFollower = request.data['userFollower']
+        userFollowing = request.data['userFollowing']
+        follower = Follower.objects.filter(userFollower__exact=userFollower,userFollowing__exact=userFollowing)
+        follower.delete()
+        return Response(True);     
