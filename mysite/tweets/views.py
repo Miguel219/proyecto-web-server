@@ -57,7 +57,7 @@ class TweetViewSet(viewsets.ModelViewSet):
         tweet = self.get_object()
         comments = Comment.objects.filter(tweet=tweet.id).order_by('date')
         if(comments.count()>0):
-            return(Response(CommentSerializer(comments,many=True).data))
+            return(Response(CommentSerializer(comments,many=True,context={'request':request}).data))
         else:
             return Response([])
 
@@ -69,7 +69,7 @@ class TweetViewSet(viewsets.ModelViewSet):
         likes = Like.objects.filter(tweet=tweet.id).order_by('date')
          
         if(likes.count()>0):
-            return(Response(LikeSerializer(likes,many=True).data))
+            return(Response(LikeSerializer(likes,many=True,context={'request':request}).data))
         else:
             return Response([])
     
@@ -81,7 +81,7 @@ class TweetViewSet(viewsets.ModelViewSet):
         likes = Like.objects.filter(tweet=tweet.id).order_by('date').values('user')
         users = User.objects.filter(id__in=likes)
         if(users.count()>0):
-            return(Response(UserSerializer(users,many=True).data))
+            return(Response(UserSerializer(users,many=True,context={'request':request}).data))
         else:
             return Response([])
 
@@ -93,6 +93,6 @@ class TweetViewSet(viewsets.ModelViewSet):
         retweets = Retweet.objects.filter(originalTweet=tweet.id).order_by('date').values('user')
         users = User.objects.filter(id__in=retweets)
         if(users.count()>0):
-            return(Response(UserSerializer(users,many=True).data))
+            return(Response(UserSerializer(users,many=True,context={'request':request}).data))
         else:
             return Response([])
