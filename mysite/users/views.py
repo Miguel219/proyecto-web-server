@@ -310,7 +310,7 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_retweetsNotification(self, request, pk=None):
         user = request.user
         tweets = Tweet.objects.filter(user=user.id)
-        retweets = Retweet.objects.filter(originalTweet__in=tweets)
+        retweets = Retweet.objects.filter(originalTweet__in=tweets).order_by('-date')
         if(retweets.count()>0):
             return(Response(RetweetSerializer(retweets,many=True,context={'request':request}).data))
         else:
@@ -321,7 +321,7 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_commentsNotification(self, request, pk=None):
         user = request.user
         tweets = Tweet.objects.filter(user=user.id)
-        comments = Comment.objects.filter(tweet__in=tweets)
+        comments = Comment.objects.filter(tweet__in=tweets).order_by('-date')
         if(comments.count()>0):
             return(Response(CommentSerializer(comments,many=True,context={'request':request}).data))
         else:
@@ -332,7 +332,7 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_likesNotification(self, request, pk=None):
         user = request.user
         tweets = Tweet.objects.filter(user=user.id)
-        likes = Like.objects.filter(tweet__in=tweets)
+        likes = Like.objects.filter(tweet__in=tweets).order_by('-date')
         if(likes.count()>0):
             return(Response(LikeSerializer(likes,many=True,context={'request':request}).data))
         else:
