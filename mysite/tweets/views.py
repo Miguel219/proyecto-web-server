@@ -9,9 +9,10 @@ from permissions.services import APIPermissionClassFactory
 from tweets.models import Tweet
 from tweets.serializers import TweetSerializer
 from users.serializers import UserSerializer
+from users.models import User
+from retweets.models import Retweet
 from comments.models import Comment
 from comments.serializers import CommentSerializer
-from users.serializers import UserSerializer
 from likes.models import Like
 from likes.serializers import LikeSerializer
 
@@ -34,6 +35,8 @@ class TweetViewSet(viewsets.ModelViewSet):
                     'update': False,
                     'get_comments': lambda user, obj, req: user.is_authenticated,
                     'get_likes': lambda user, obj, req: user.is_authenticated,
+                    'get_users_likes_tweet': lambda user, obj, req: user.is_authenticated,
+                    'get_users_retweets_tweet': lambda user, obj, req: user.is_authenticated,
                 }
             }
         ),
@@ -64,7 +67,32 @@ class TweetViewSet(viewsets.ModelViewSet):
         
         tweet = self.get_object()
         likes = Like.objects.filter(tweet=tweet.id).order_by('date')
+         
         if(likes.count()>0):
             return(Response(LikeSerializer(likes,many=True).data))
+        else:
+            return Response([])
+    
+    #Obtener los usuarios que le dieron like a un tweet
+    @action(detail=True, url_path='likesUsers', methods=['get'])
+    def get_users_likes_tweet(self, request, pk=None):
+        
+        tweet = self.get_object()
+        likes = Like.objects.filter(tweet=tweet.id).order_by('date').values('user')
+        users = User.objects.filter(id__in=likes)
+        if(users.count()>0):
+            return(Response(UserSerializer(users,many=True).data))
+        else:
+            return Response([])
+
+    #Obtener los usuarios que le dieron retweet a un tweet
+    @action(detail=True, url_path='retweetUsers', methods=['get'])
+    def get_users_retweets_tweet(self, request, pk=None):
+        
+        tweet = self.get_object()
+        retweets = Retweet.objects.filter(originalTweet=tweet.id).order_by('date').values('user')
+        users = User.objects.filter(id__in=retweets)
+        if(users.count()>0):
+            return(Response(UserSerializer(users,many=True).data))
         else:
             return Response([])
