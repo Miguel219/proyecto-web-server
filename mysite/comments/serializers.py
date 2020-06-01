@@ -10,7 +10,7 @@ from retweets.serializers import RetweetSerializer
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    
+    is_mine = serializers.SerializerMethodField()
     class Meta:
         model = Comment
         fields = (
@@ -19,8 +19,17 @@ class CommentSerializer(serializers.ModelSerializer):
             'date',
             'user',
             'tweet',
-            'retweet'
+            'retweet',
+            'is_mine',
         )
+
+    def get_is_mine(self, obj):
+        user = None
+        request = self.context.get("request")
+        if request and hasattr(request, "user"):
+            user = request.user
+            return user.id == obj.user.id
+        return False 
 
     #Funcion de representacion que realiza un override al serializer
     def to_representation(self, instance):
