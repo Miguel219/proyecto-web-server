@@ -16,6 +16,8 @@ from retweets.models import Retweet
 from retweets.serializers import RetweetSerializer 
 from likes.models import Like 
 from likes.serializers import LikeSerializer 
+from comments.models import Comment 
+from comments.serializers import CommentSerializer 
 from followers.models import Follower
 from followers.serializers import FollowerSerializer
 from messages.models import Message
@@ -59,7 +61,9 @@ class UserViewSet(viewsets.ModelViewSet):
                     'get_messages': lambda user, obj, req: user.is_authenticated,
                     'get_lists': lambda user, obj, req: user.is_authenticated,
                     'get_savedTweets': lambda user, obj, req: user.is_authenticated,
-
+                    'get_retweetsNotification': lambda user, obj, req: user.is_authenticated,
+                    'get_commentsNotification': lambda user, obj, req: user.is_authenticated,
+                    'get_likesNotification': lambda user, obj, req: user.is_authenticated,
                 }
             }
         ),
@@ -216,9 +220,10 @@ class UserViewSet(viewsets.ModelViewSet):
     #Obtener los tweets del search
     @action(detail=False, url_path='tweetsSearch', methods=['post'])
     def get_tweetsSearch(self, request, pk=None):
+        user = request.user
         search = request.data['search']
-        tweets = Tweet.objects.filter(content__icontains=search)
-        retweets = Retweet.objects.filter(content__icontains=search)
+        tweets = Tweet.objects.exclude(user=user.id).filter(content__icontains=search)
+        retweets = Retweet.objects.exclude(user=user.id).filter(content__icontains=search)
         #Se unen los querySets
         results_list = list(chain(tweets, retweets))
         #Se filtran por fechas
@@ -298,3 +303,37 @@ class UserViewSet(viewsets.ModelViewSet):
                 results.append({'id': item_type + '-' + str(retweetSerializer.data['id']), 'itemType': item_type, 'data': serializer.data,'user_retweet':userSerializer.data,'retweet_id':retweetSerializer.data['id']})
 
         return(Response(results))
+
+        
+    #Obtener los retweets que le han hecho al usuario
+    @action(detail=False, url_path='retweetsNotification', methods=['get'])
+    def get_retweetsNotification(self, request, pk=None):
+        user = request.user
+        tweets = Tweet.objects.filter(user=user.id)
+        retweets = Retweet.objects.filter(originalTweet__in=tweets)
+        if(retweets.count()>0):
+            return(Response(RetweetSerializer(retweets,many=True,context={'request':request}).data))
+        else:
+            return Response([])
+
+    #Obtener los comments que le han hecho al usuario
+    @action(detail=False, url_path='commentsNotification', methods=['get'])
+    def get_commentsNotification(self, request, pk=None):
+        user = request.user
+        tweets = Tweet.objects.filter(user=user.id)
+        comments = Comment.objects.filter(tweet__in=tweets)
+        if(comments.count()>0):
+            return(Response(CommentSerializer(comments,many=True,context={'request':request}).data))
+        else:
+            return Response([])
+
+    #Obtener los likes que le han hecho al usuario
+    @action(detail=False, url_path='likesNotification', methods=['get'])
+    def get_likesNotification(self, request, pk=None):
+        user = request.user
+        tweets = Tweet.objects.filter(user=user.id)
+        likes = Like.objects.filter(tweet__in=tweets)
+        if(likes.count()>0):
+            return(Response(LikeSerializer(likes,many=True,context={'request':request}).data))
+        else:
+            return Response([])
