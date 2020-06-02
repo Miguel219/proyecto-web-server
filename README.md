@@ -55,7 +55,7 @@ Video explicativo del readme.md  https://screenrec.com/share/b7RePcku31
 Video de funcionamiento https://photos.google.com/share/AF1QipPIY_1yp9XAN3wMt7NDiEc6HqG-Wmd4c8OJy4BSpEaDi5wR8TcDcExN-I1cdtn16A?key=RWpZeXpuaERGQ2MwSDY5d1VtNXU0c0NPVDE1TkVR
 
 ##Example
-<div style="width:260px;max-width:100%;"><div style="height:0;padding-bottom:216.15%;position:relative;"><iframe width="260" height="562" style="position:absolute;top:0;left:0;width:100%;height:100%;" frameBorder="0" src="https://imgflip.com/embed/43o3uc"></iframe></div><p><a href="https://imgflip.com/gif/43o3uc">via Imgflip</a></p></div>
+<a href="https://imgflip.com/gif/43o3uc">via Imgflip</a>
 ## Proyecto Realizado por
 * Universidad del Valle de Guatemala
 * Silvio Orozco 18282 https://github.com/sorozcov/
