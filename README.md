@@ -49,7 +49,11 @@ let ip4 = 'tu_ip_4';
 
 # Nota importante:
 Deben estar corriendo simultáneamente ambos proyectos para que todo funcione.
-Video explicativo del readme.md 
+
+Video explicativo del readme.md  https://screenrec.com/share/b7RePcku31
+
+Video de funcionamiento https://photos.google.com/share/AF1QipPIY_1yp9XAN3wMt7NDiEc6HqG-Wmd4c8OJy4BSpEaDi5wR8TcDcExN-I1cdtn16A?key=RWpZeXpuaERGQ2MwSDY5d1VtNXU0c0NPVDE1TkVR
+
 
 ## Proyecto Realizado por
 * Universidad del Valle de Guatemala
