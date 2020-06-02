@@ -1,7 +1,7 @@
 
 # proyecto-web TWITTER
 * Este proyecto es una integración de 2 repositorios
-https://github.com/Miguel219/proyecto-web-server para el backend DJANGO y
+https://github.com/Miguel219/proyecto-web-server para el backend DJANGO
 https://github.com/sorozcov/proyecto-web-front-end para el frontend REACT NATIVE EXPO
 * El proyecto es una representación del funcionamiento de Twitter
 
@@ -11,7 +11,6 @@ https://github.com/sorozcov/proyecto-web-front-end para el frontend REACT NATIVE
 * Crear base de datos en Postgres llamada ProyectoWeb (Puede utilizar la consola o pgadmin)
 * Abrir archivo /mysite/mysite/setting.py
 * En el archivo anterior modificar user, password,host y port para configuración con postgres. Por lo general host y port son predeterminados. El usuario y contraseña debes cambiarla a tu establecido con postgres.
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -26,6 +25,7 @@ DATABASES = {
 * virtualenv venv   (Crear virtualenv para correr el servidor en la carpeta principal)
 * ./venv/Scripts/Activate (Activar virtualenv)
 * pip install -r requirements.txt (Instalar dependencias de python)
+* pip install psycopg2
 * cd mysite 
 * python manage.py migrate (Migraciones de django)
 * python manage.py makemigrations (Migraciones de django)
@@ -54,8 +54,17 @@ Video explicativo del readme.md  https://screenrec.com/share/b7RePcku31
 
 Video de funcionamiento https://photos.google.com/share/AF1QipPIY_1yp9XAN3wMt7NDiEc6HqG-Wmd4c8OJy4BSpEaDi5wR8TcDcExN-I1cdtn16A?key=RWpZeXpuaERGQ2MwSDY5d1VtNXU0c0NPVDE1TkVR
 
-##Example
-<a href="https://imgflip.com/gif/43o3uc">via Imgflip</a>
+# App running
+<p float="left">
+<img src="/demo/1.gif" width="250" height="500"  hspace="20"/>
+<img src="/demo/2.gif" width="250" height="500"  hspace="20"/>
+<img src="/demo/3.gif" width="250" height="500"  hspace="20"/><br>
+<img src="/demo/4.gif" width="250" height="500"  hspace="20"/>
+<img src="/demo/5.gif" width="250" height="500"  hspace="20"/>
+<img src="/demo/6.gif" width="250" height="500"  hspace="20"/><br>
+<img src="/demo/7.gif" width="250" height="500"  hspace="20"/>
+</p>
+
 ## Proyecto Realizado por
 * Universidad del Valle de Guatemala
 * Silvio Orozco 18282 https://github.com/sorozcov/
