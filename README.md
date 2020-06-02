@@ -11,6 +11,7 @@ https://github.com/sorozcov/proyecto-web-front-end para el frontend REACT NATIVE
 * Crear base de datos en Postgres llamada ProyectoWeb (Puede utilizar la consola o pgadmin)
 * Abrir archivo /mysite/mysite/setting.py
 * En el archivo anterior modificar user, password,host y port para configuración con postgres. Por lo general host y port son predeterminados. El usuario y contraseña debes cambiarla a tu establecido con postgres.
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
