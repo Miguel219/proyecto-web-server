@@ -1,7 +1,7 @@
 
 # proyecto-web TWITTER
 * Este proyecto es una integración de 2 repositorios
-https://github.com/Miguel219/proyecto-web-server para el backend DJANGO
+https://github.com/Miguel219/proyecto-web-server para el backend DJANGO y
 https://github.com/sorozcov/proyecto-web-front-end para el frontend REACT NATIVE EXPO
 * El proyecto es una representación del funcionamiento de Twitter
 
